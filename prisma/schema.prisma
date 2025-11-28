@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Venue {
+  id               String           @id @default(cuid())
+  name             String
+  description      String
+  location         String
+  city             String
+  address          String
+  capacity         Int
+  pricePerNight    Float
+  amenities        String
+  imageUrl         String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  bookingInquiries BookingInquiry[]
+
+  @@index([city])
+  @@index([capacity])
+  @@index([pricePerNight])
+}
+
+model BookingInquiry {
+  id            String   @id @default(cuid())
+  venueId       String
+  companyName   String
+  email         String
+  startDate     DateTime
+  endDate       DateTime
+  attendeeCount Int
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  venue         Venue    @relation(fields: [venueId], references: [id])
+
+  @@index([venueId])
+  @@index([email])
+  @@index([startDate, endDate])
+}
